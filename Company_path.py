@@ -1,7 +1,7 @@
 import logging
 import re
 from pathlib import Path
-
+import shutil
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s : %(message)s'
@@ -86,7 +86,19 @@ def parse_company(folder_name):
 
 
 def find_folder_name(folder_path):
-    
+    """
+    找出指定路徑「第一層」的所有資料夾。
+
+    傳入：
+    folder_path → 要搜尋的資料夾路徑
+
+    做什麼：
+    使用 iterdir() 查看第一層內容
+    只保留資料夾，不要檔案
+
+    回傳：
+    folders → 資料夾 Path 組成的 list
+    """
     logging.debug(f"資料夾路徑：{folder_path}")
 
 
@@ -99,6 +111,20 @@ def find_folder_name(folder_path):
     return folders
 
 def is_company_folder(folder):
+    """
+    判斷這個資料夾是不是「公司資料夾」。
+
+    傳入：
+    folder → 要檢查的資料夾 Path
+
+    做什麼：
+    用 get_company_id() 從資料夾名稱找統編
+
+    回傳：
+    True  → 找到統編，是公司資料夾
+    False → 找不到統編，視為群組資料夾
+    """
+
 
     # 從資料夾名稱找統編
     company_id = get_company_id(folder.name)
@@ -111,7 +137,19 @@ def is_company_folder(folder):
     return False
 
 def find_companies_in_group(folder):
+    """
+    找出「群組資料夾」下一層的所有公司資料夾。
 
+    傳入：
+    folder → 群組資料夾的 Path
+
+    做什麼：
+    查看群組資料夾的下一層
+    用 is_company_folder() 判斷是不是公司
+
+    回傳：
+    companies → 找到的公司 Path 組成的 list
+    """
     # 準備空清單，用來存找到的公司
     companies = []
 
@@ -132,6 +170,18 @@ def find_companies_in_group(folder):
     return companies
 
 def find_companies(folder_path):
+    """
+        folder_path
+            ↓
+        find_folder_name() → 找第一層資料夾
+            ↓
+        is_company_folder() → 判斷是不是公司
+            ↓
+        是 → 加入 companies
+        不是 → 進群組裡繼續找
+            ↓
+        return companies
+"""
 
     # 準備一個空清單
     # 最後所有找到的公司都會放進這裡
@@ -172,9 +222,13 @@ if __name__ == "__main__":
     #     company_id = get_company_id(company)
     pass
     # 準備一個正常的客戶資料夾名稱
+# 準備要搜尋的根目錄
 folder_path = Path(r"E:\測試")
 
-folders = find_companies(folder_path)
+# 找出所有公司
+companies = find_companies(folder_path)
 
-for folder in folders:
-    print(f"找到公司資料夾：{folder.name} (路徑: {folder})")
+
+# 一家公司一家公司的處理
+for company in companies:
+    pass
